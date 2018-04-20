@@ -92,3 +92,8 @@ func GetGatewayAlias(gatewayHashKey string) (bool,string){
 func CheckGatewayAliasIsExist(gatewayAlias string) (bool,string){
 	return dao.CheckGatewayAliasIsExist(gatewayAlias)
 }
+
+// 获取简易网关信息
+func GetSimpleGatewayInfo(gatewayHashKey string) (bool,interface{}) {
+	return dao.GetSimpleGatewayInfo(gatewayHashKey)
+}

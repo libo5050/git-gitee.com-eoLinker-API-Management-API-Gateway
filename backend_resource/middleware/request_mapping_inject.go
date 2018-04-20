@@ -3,7 +3,6 @@ package middleware
 import (
 	"goku-ce-1.0/dao"
 	"net/http"
-	"time"
 	"fmt"
 	"strings"
 	"github.com/farseer810/yawf"
@@ -23,7 +22,6 @@ func isURIMatched(context yawf.Context, incomingURI, testURI string) bool {
 func InjectRequestMapping(httpRequest *http.Request, context yawf.Context,
 	httpResponse http.ResponseWriter, headers yawf.Headers) (bool, string) {
 	var domain, method, scheme, gatewayHashkey, requestURL string
-	t1 := time.Now()
 	// TODO: 0 for http, 1 for https
 	scheme = "0"
 	fmt.Println(httpRequest.RemoteAddr)
@@ -50,15 +48,12 @@ func InjectRequestMapping(httpRequest *http.Request, context yawf.Context,
 	gatewayAlias := requestInfo[1]
 	strategyKey := requestInfo[2]
 	
-	
-
 	// 通过网关别名获取网关hashKey
 	gatewayHashkey = dao.GetGatewayHashKey(context,gatewayAlias)
 	if gatewayHashkey == "" {
 		httpResponse.WriteHeader(404)
 		return false, "error gatewayAlias"
 	}
-
 	fmt.Println(gatewayHashkey)
 	paths := dao.GetAllAPIPaths(context, gatewayHashkey)
 	fmt.Println(paths)
@@ -68,11 +63,10 @@ func InjectRequestMapping(httpRequest *http.Request, context yawf.Context,
 	for _, uri := range paths {
 		if uri[0:4] != scheme+":"+method+":" {
 			continue
-		}else{
-			flag = true
 		}
 		if isURIMatched(context, requestURL[gatewayLen:], uri[4:]) {
 			matchedURI = uri
+			flag = true
 		}
 	}
 	if !flag {
@@ -86,6 +80,5 @@ func InjectRequestMapping(httpRequest *http.Request, context yawf.Context,
 	info := dao.GetMapping(context, gatewayHashkey, matchedURI)
 	info.StrategyKey = strategyKey
 	context.Map(info)
-	fmt.Println("mapping time:",time.Since(t1))
 	return true, ""
 }

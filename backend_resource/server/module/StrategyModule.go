@@ -38,3 +38,8 @@ func GetStrategyList(gatewayID int) (bool,interface{}){
 func CheckStrategyPermission(gatewayID,strategyID int) bool{
 	return dao.CheckStrategyPermission(gatewayID,strategyID)
 }
+
+// 获取简易策略组列表
+func GetSimpleStrategyList(gatewayID int) (bool,interface{}){
+	return dao.GetSimpleStrategyList(gatewayID)
+}

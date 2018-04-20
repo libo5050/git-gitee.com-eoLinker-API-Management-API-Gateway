@@ -155,3 +155,32 @@ func GetStrategyList(c *gin.Context) {
 		return
 	}
 }
+
+// 获取简易策略组列表
+func GetSimpleStrategyList(c *gin.Context) {
+	var userID int
+	gatewayHashKey := c.PostForm("gatewayHashKey")
+	
+	if module.CheckLogin(c) == false{
+		c.JSON(200,gin.H{"type":"guest","statusCode":"100000",})
+		return 
+	}else{
+		result,_ := c.Request.Cookie("userID")
+		userID,_ = strconv.Atoi(result.Value)
+		flag := module.CheckGatewayPermission(gatewayHashKey,userID)
+		if flag == false{
+			c.JSON(200,gin.H{"statusCode":"100005","type":"guest",})
+			return 
+		}
+	}
+	var gatewayID int
+	_,gatewayID = module.GetIDFromHashKey(gatewayHashKey)
+	flag,strategyList := module.GetSimpleStrategyList(gatewayID)
+	if flag == true{
+		c.JSON(200,gin.H{"type":"strategy","statusCode":"000000","strategyList":strategyList,})
+		return
+	}else{
+		c.JSON(200,gin.H{"type":"strategy","statusCode":"190000"})
+		return
+	}
+}

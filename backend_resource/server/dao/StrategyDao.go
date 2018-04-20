@@ -146,3 +146,37 @@ func GetStrategyCount(gatewayHashKey string) int{
 	db.QueryRow(sql,gatewayHashKey).Scan(&count)
 	return count
 }
+
+// 获取简易策略组列表
+func GetSimpleStrategyList(gatewayID int) (bool,interface{}){
+	db := database.GetConnection()
+	
+	sql := "SELECT strategyID,strategyName,strategyKey FROM eo_gateway_strategy_group WHERE eo_gateway_strategy_group.gatewayID = ? ORDER BY updateTime DESC"
+	rows,err := db.Query(sql,gatewayID)
+	if err != nil {
+		return false,nil
+	}
+	num :=0
+	strategyList := make([]map[string]interface{},0)
+	//延时关闭Rows
+	defer rows.Close()
+	//获取记录列
+	if _, err = rows.Columns(); err != nil {
+    	return false,nil
+	} else {
+		for rows.Next(){
+			var strategyID int
+			var strategyName,strategyKey string
+			err = rows.Scan(&strategyID,&strategyName,&strategyKey)
+			if err!=nil{
+				return false,nil
+			}
+			strategyList = append(strategyList,map[string]interface{}{"strategyID":strategyID,"strategyName":strategyName,"strategyKey":strategyKey})
+			num +=1
+		}
+	}
+	if num == 0{
+		return false,nil
+	}
+	return true,strategyList
+}

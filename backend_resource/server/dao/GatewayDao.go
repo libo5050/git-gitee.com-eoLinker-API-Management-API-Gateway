@@ -233,7 +233,7 @@ func GetGatewayInfo(gatewayHashKey string) (bool,map[string]interface{}){
 	apiGroupCount := GetApiGroupCount(gatewayHashKey)
 	strategyGroupCount := GetStrategyCount(gatewayHashKey)
 
-	return true,map[string]interface{}{"gatewayID":gatewayID,"gatewayName":gatewayName,"gatewayDesc":gatewayDesc,"gatewayStatus":gatewayStatus,"updateTime":updateTime,"gatewayAlias":gatewayAlias,"gatewayPort":gatewayPort,"monitorTime":monitorTime,"apiGroupCount":apiGroupCount,"strategyGroupCount":strategyGroupCount,"redisInfo":redisInfo}
+	return true,map[string]interface{}{"gatewayID":gatewayID,"gatewayName":gatewayName,"gatewayDesc":gatewayDesc,"gatewayStatus":gatewayStatus,"updateTime":updateTime,"createTime":createTime,"gatewayAlias":gatewayAlias,"gatewayPort":gatewayPort,"monitorTime":monitorTime,"apiGroupCount":apiGroupCount,"strategyGroupCount":strategyGroupCount,"redisInfo":redisInfo}
 }
 
 // 通过hashKey获取网关别名
@@ -310,4 +310,18 @@ func GetGatewayInfoByRedis(gatewayHashKey string) interface{}{
 	lastUpdateTime := hourStr + strconv.Itoa(hour) + ":" + minuteStr + strconv.Itoa(minute) + ":" + secondStr + strconv.Itoa(second)
 	return map[string]interface{}{"gatewayMinuteCount":gatewayMinuteCount,"gatewayDayCount":gatewayDayCount,"gatewaySuccessCount":gatewaySuccessCount,"gatewayFailureCount":gatewayFailureCount,"lastUpdateTime":lastUpdateTime}
 }
-	
+
+// 获取简易网关信息
+func GetSimpleGatewayInfo(gatewayHashKey string) (bool,interface{}) {
+	db := database.GetConnection()
+	var gatewayID int
+	var gatewayName,gatewayAlias string
+	sql := `SELECT eo_gateway.gatewayID,eo_gateway.gatewayName,eo_gateway.gatewayAlias FROM eo_gateway WHERE eo_gateway.hashKey = ?;`
+	err := db.QueryRow(sql,gatewayHashKey).Scan(&gatewayID,&gatewayName,&gatewayAlias)
+	if err != nil{
+		return false,nil
+	}
+	gatewayPort := conf.Configure["eotest_port"]
+
+	return true,map[string]interface{}{"gatewayID":gatewayID,"gatewayName":gatewayName,"gatewayAlias":gatewayAlias,"gatewayPort":gatewayPort}
+}

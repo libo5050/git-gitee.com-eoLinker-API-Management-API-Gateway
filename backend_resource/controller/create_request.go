@@ -97,7 +97,9 @@ func CreateRequest(httpRequest *http.Request, info *utils.MappingInfo, queryPara
 	index := strings.Index(httpRequest.RemoteAddr, ":")
 	remoteIP := httpRequest.RemoteAddr[:index]
 	fmt.Println("deal with param time:",time.Since(t1))
+	t2 := time.Now()
 	res, err := request.Send()
+	fmt.Println("get response time:",time.Since(t2))
 	if err != nil {
 		dao.UpdateVisitCount(context, info,remoteIP)
 		dao.UpdateFailureCount(context,info.GatewayHashKey)
@@ -111,14 +113,16 @@ func CreateRequest(httpRequest *http.Request, info *utils.MappingInfo, queryPara
 	for key, values := range res.Headers() {
 		httpResponseHeader[key] = values
 	}
-	
+	t3 := time.Now()
 	go dao.UpdateVisitCount(context, info,remoteIP)
+	fmt.Println("update visit count:",time.Since(t3))
+	t4 := time.Now()
 	statusCode := res.StatusCode()
 	if statusCode == 200 {
-		dao.UpdateSuccessCount(context,info.GatewayHashKey)
+		go dao.UpdateSuccessCount(context,info.GatewayHashKey)
 	}else{
-		dao.UpdateFailureCount(context,info.GatewayHashKey)
+		go dao.UpdateFailureCount(context,info.GatewayHashKey)
 	}
-	fmt.Println("create request time:",time.Since(t1))
+	fmt.Println("update success/failure count:",time.Since(t4))
 	return res.StatusCode(), res.Body()
 }

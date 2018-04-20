@@ -1,4 +1,3 @@
-
 USE $mysql_dbname
 SET FOREIGN_KEY_CHECKS=0;
 
@@ -184,8 +183,8 @@ CREATE TABLE `eo_gateway_rate_limit` (
   `limitCount` int(11) DEFAULT NULL,
   `priorityLevel` int(4) unsigned NOT NULL DEFAULT '1',
   `strategyID` int(11) NOT NULL,
-  `createTime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `updateTime` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `createTime` timestamp  NULL,
+  `updateTime` timestamp  NULL,
   `startTime` varchar(255) NOT NULL,
   `endTime` varchar(255) NOT NULL,
   PRIMARY KEY (`limitID`)
@@ -201,8 +200,8 @@ CREATE TABLE `eo_gateway_strategy_group` (
   `strategyKey` varchar(255) NOT NULL,
   `gatewayID` int(11) NOT NULL,
   `strategyDesc` varchar(255) DEFAULT NULL,
-  `updateTime` timestamp NULL DEFAULT NULL,
-  `createTime` timestamp NULL DEFAULT NULL,
+  `updateTime` timestamp NULL ,
+  `createTime` timestamp NULL ,
   `blackList` text,
   `whiteList` text,
   `chooseType` tinyint(4) NOT NULL DEFAULT '0',

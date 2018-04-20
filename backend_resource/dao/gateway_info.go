@@ -22,7 +22,6 @@ func GetGatewayHashKey(context yawf.Context,gatewayAlias string) string {
 	var redisKey string = "gatewayHashKey:" + gatewayAlias
 	conn := cache.GetConnection(context)
 	gatewayHashKey, err := redis.String(conn.Do("GET", redisKey))
-
 	if err == redis.ErrNil {
 		gatewayHashKey = loadGatewayHashKey(gatewayAlias)
 		conn.Do("SET", redisKey, gatewayHashKey)

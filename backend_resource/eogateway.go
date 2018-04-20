@@ -79,6 +79,7 @@ func main() {
             strategy.POST("/editStrategy",controller.EditStrategy)
             strategy.POST("/deleteStrategy",controller.DeleteStrategy)
             strategy.POST("/getStrategyList",controller.GetStrategyList)
+            strategy.POST("/getSimpleStrategyList",controller.GetSimpleStrategyList)
         }
         auth := web.Group("/Auth")
         {
